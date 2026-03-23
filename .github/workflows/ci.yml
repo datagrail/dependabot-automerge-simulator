@@ -13,8 +13,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pytest
-      - run: pytest python/
+      - run: pip install -r python/requirements.txt pytest
+      - run: pytest
+        working-directory: python
 
   test-ruby:
     runs-on: ubuntu-latest
@@ -23,7 +24,10 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-      - run: ruby ruby/test_hello.rb
+          bundler-cache: true
+          working-directory: ruby
+      - run: bundle exec ruby test_hello.rb
+        working-directory: ruby
 
   test-javascript:
     runs-on: ubuntu-latest
