@@ -1,0 +1,17 @@
+{
+  "name": "dependabot-automerge-simulator-js",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JavaScript package fixtures for dependabot-automerge simulator",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "lodash": "4.17.11",
+    "axios": "0.27.2",
+    "express": "4.17.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

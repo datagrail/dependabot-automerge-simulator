@@ -1,0 +1,17 @@
+# --- Security fix (minor bump) ---
+# CVE-2023-32681: requests < 2.31.0 leaks Proxy-Authorization headers
+# Dependabot security update will bump to 2.31.0+ (same major, minor bump)
+requests==2.27.1
+
+# --- Major version bump (routine) ---
+# Flask 2.x → 3.x: Dependabot version update will suggest Flask 3.x
+# The automerge tool detects the major bump and labels for human review
+Flask==2.3.3
+
+# --- Routine minor/patch ---
+# Dependabot will suggest newer 2023/2024 releases of certifi
+certifi==2023.7.22
+
+# --- Routine minor/patch ---
+# urllib3 1.26.x → latest 1.26.x patch, or potential 2.x major bump
+urllib3==1.26.12
