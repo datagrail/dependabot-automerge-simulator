@@ -34,7 +34,11 @@ if [ -z "$OPEN_PRS" ]; then
   echo "  No open Dependabot PRs found."
 else
   while IFS=$'\t' read -r number title; do
-    echo "  Commenting @dependabot recreate on PR #$number: $title"
+    echo "  PR #$number: $title"
+    echo "    Removing labels..."
+    gh pr edit "$number" --repo "$REPO" --remove-label "dependabot-automerge" 2>/dev/null || true
+    gh pr edit "$number" --repo "$REPO" --remove-label "Human Needed" 2>/dev/null || true
+    echo "    Commenting @dependabot recreate"
     gh pr comment "$number" --repo "$REPO" --body "@dependabot recreate"
   done <<< "$OPEN_PRS"
 fi
