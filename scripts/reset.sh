@@ -9,6 +9,29 @@ set -euo pipefail
 
 REPO="datagrail/dependabot-automerge-simulator"
 
+echo "=== Disabling 'main' branch ruleset ==="
+RULESET_ID=$(gh api "repos/$REPO/rulesets" --jq '.[] | select(.name == "main") | .id')
+if [ -z "$RULESET_ID" ]; then
+  echo "  ERROR: Could not find a ruleset named 'main'. Aborting." >&2
+  exit 1
+fi
+echo "  Ruleset ID: $RULESET_ID — disabling..."
+gh api --method PUT "repos/$REPO/rulesets/$RULESET_ID" \
+  --field enforcement=disabled > /dev/null
+
+echo ""
+echo "=== Force-merging open Dependabot PRs ==="
+DEPENDABOT_PRS=$(gh pr list --repo "$REPO" --author "app/dependabot" --state open --json number,title --jq '.[] | "\(.number)\t\(.title)"')
+if [ -z "$DEPENDABOT_PRS" ]; then
+  echo "  No open Dependabot PRs found."
+else
+  while IFS=$'\t' read -r pr_number pr_title; do
+    echo "  Merging PR #$pr_number: $pr_title"
+    gh pr merge "$pr_number" --repo "$REPO" --merge --admin --delete-branch 2>&1 | sed 's/^/    /'
+  done <<< "$DEPENDABOT_PRS"
+fi
+
+echo ""
 echo "=== Fetching latest from origin ==="
 git fetch origin
 
@@ -25,23 +48,10 @@ git push origin main
 echo "  main is now at $(git rev-parse --short HEAD)."
 
 echo ""
-echo "=== Requesting Dependabot recreate open PRs ==="
-OPEN_PRS=$(gh pr list --repo "$REPO" --author "app/dependabot" --state open \
-  --json number,title \
-  | jq -r '.[] | [(.number|tostring), .title] | @tsv')
-
-if [ -z "$OPEN_PRS" ]; then
-  echo "  No open Dependabot PRs found."
-else
-  while IFS=$'\t' read -r number title; do
-    echo "  PR #$number: $title"
-    echo "    Removing labels..."
-    gh pr edit "$number" --repo "$REPO" --remove-label "dependabot-automerge" 2>/dev/null || true
-    gh pr edit "$number" --repo "$REPO" --remove-label "Human Needed" 2>/dev/null || true
-    echo "    Commenting @dependabot recreate"
-    gh pr comment "$number" --repo "$REPO" --body "@dependabot recreate"
-  done <<< "$OPEN_PRS"
-fi
+echo "=== Re-enabling 'main' branch ruleset ==="
+gh api --method PUT "repos/$REPO/rulesets/$RULESET_ID" \
+  --field enforcement=active > /dev/null
+echo "  Ruleset 'main' re-enabled."
 
 echo ""
 echo "=== Done ==="
