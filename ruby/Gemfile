@@ -11,5 +11,5 @@ gem 'rake', '13.3.1'
 
 # --- Routine minor/patch ---
 # json 2.7.x → latest 2.x: minor/patch routine update
-gem 'json', '2.7.0'
+gem 'json', '2.19.2'
 gem 'minitest', '5.18.0'
