@@ -17,3 +17,6 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
+
+# Update this date to re-trigger Dependabot
+# last-reset: 2026-03-23

@@ -1,0 +1,44 @@
+name: Update baseline branch
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  update-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit author
+        id: check
+        run: |
+          AUTHOR_EMAIL=$(git log -1 --format="%ae")
+          COMMIT_MSG=$(git log -1 --format="%s")
+          echo "Commit author: $AUTHOR_EMAIL"
+          echo "Commit message: $COMMIT_MSG"
+
+          if [[ "$COMMIT_MSG" == Reset:* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping — this is a reset commit."
+          elif echo "$AUTHOR_EMAIL" | grep -q "dependabot\[bot\]@"; then
+            echo "::error::Dependabot commit landed on main. The simulator is now dirty — run ./scripts/reset.sh to restore vulnerable deps and recreate Dependabot PRs."
+            exit 1
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Cherry-pick onto baseline
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout baseline
+          git cherry-pick ${{ github.sha }}
+          git push origin baseline
+          echo "Cherry-picked $(git rev-parse --short ${{ github.sha }}) onto baseline"

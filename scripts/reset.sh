@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# reset.sh — Close all open Dependabot PRs and request recreates so fresh PRs
-# are created by Dependabot on its next scan.
+# reset.sh — Reset main to the baseline branch state (vulnerable deps + app code),
+# then request Dependabot recreate its open PRs against the reset main.
 #
 # Usage: ./scripts/reset.sh
 # Requires: gh CLI authenticated with write access to the repo.
@@ -9,36 +9,37 @@ set -euo pipefail
 
 REPO="datagrail/dependabot-automerge-simulator"
 
-echo "=== Fetching open Dependabot PRs ==="
+echo "=== Fetching latest from origin ==="
+git fetch origin
+
+echo ""
+echo "=== Resetting main to baseline file state ==="
+git checkout main
+git reset origin/main
+git checkout origin/baseline -- .
+# Update the last-reset date to trigger a Dependabot rescan
+sed -i '' "s/^# last-reset: .*/# last-reset: $(date +%Y-%m-%dT%H:%M:%S)/" .github/dependabot.yml
+git add -A
+git commit -m "Reset: restore baseline state ($(date +%Y-%m-%d))"
+git push origin main
+echo "  main is now at $(git rev-parse --short HEAD)."
+
+echo ""
+echo "=== Requesting Dependabot recreate open PRs ==="
 OPEN_PRS=$(gh pr list --repo "$REPO" --author "app/dependabot" --state open \
-  --json number,headRefName,title --jq '.[] | [.number|tostring, .headRefName, .title] | @tsv')
+  --json number,title \
+  | jq -r '.[] | [(.number|tostring), .title] | @tsv')
 
 if [ -z "$OPEN_PRS" ]; then
   echo "  No open Dependabot PRs found."
-  exit 0
+else
+  while IFS=$'\t' read -r number title; do
+    echo "  Commenting @dependabot recreate on PR #$number: $title"
+    gh pr comment "$number" --repo "$REPO" --body "@dependabot recreate"
+  done <<< "$OPEN_PRS"
 fi
-
-echo "=== Closing PRs ==="
-while IFS=$'\t' read -r number branch title; do
-  echo "  Closing PR #$number: $title"
-  gh pr close "$number" --repo "$REPO"
-done <<< "$OPEN_PRS"
-
-echo ""
-echo "Waiting 10 seconds before requesting recreates..."
-sleep 10
-
-echo ""
-echo "=== Requesting recreates ==="
-while IFS=$'\t' read -r number branch title; do
-  echo "  Commenting @dependabot recreate on PR #$number: $title"
-  gh pr comment "$number" --repo "$REPO" --body "@dependabot recreate"
-done <<< "$OPEN_PRS"
 
 echo ""
 echo "=== Done ==="
 echo ""
-echo "Dependabot will recreate PRs on its next scan."
-echo "To trigger version update scans immediately, visit:"
-echo "  https://github.com/${REPO}/network/updates"
-echo "and click 'Check for updates' next to each ecosystem."
+echo "Dependabot will recreate each PR against the reset main branch."
