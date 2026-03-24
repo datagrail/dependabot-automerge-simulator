@@ -1,3 +1,5 @@
 javascript/node_modules/
 ruby/vendor/
+ruby/.bundle/
 python/.venv/
+__pycache__/
