@@ -7,7 +7,7 @@ GEM
       drb (~> 2.0)
       prism (~> 1.5)
     prism (1.9.0)
-    rack (2.2.3)
+    rack (3.2.5)
     rake (13.3.1)
 
 PLATFORMS
@@ -17,7 +17,7 @@ PLATFORMS
 DEPENDENCIES
   json (= 2.19.2)
   minitest (= 6.0.2)
-  rack (= 2.2.3)
+  rack (= 3.2.5)
   rake (= 13.3.1)
 
 BUNDLED WITH
