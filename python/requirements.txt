@@ -1,7 +1,7 @@
 # --- Security fix (minor bump) ---
 # CVE-2023-32681: requests < 2.31.0 leaks Proxy-Authorization headers
 # Dependabot security update will bump to 2.31.0+ (same major, minor bump)
-requests==2.32.5
+requests==2.33.0
 
 # --- Major version bump (routine) ---
 # Flask 2.x → 3.x: Dependabot version update will suggest Flask 3.x
