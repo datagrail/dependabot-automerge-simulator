@@ -2,7 +2,7 @@ require 'rack'
 
 class StaticServer
   def initialize(root = Dir.pwd)
-    @handler = Rack::File.new(root)
+    @handler = Rack::Files.new(root)
   end
 
   def call(env)
