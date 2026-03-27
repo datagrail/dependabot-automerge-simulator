@@ -14,7 +14,6 @@ describe('fetchAll', () => {
     jest.spyOn(axios, 'get').mockImplementation((url) =>
       Promise.resolve({ data: `response for ${url}` })
     );
-    jest.spyOn(axios, 'all').mockImplementation((promises) => Promise.all(promises));
   });
 
   afterAll(() => {
