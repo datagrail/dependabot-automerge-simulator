@@ -10,7 +10,7 @@ Flask==2.3.3
 
 # --- Routine minor/patch ---
 # Dependabot will suggest newer 2023/2024 releases of certifi
-certifi==2023.7.22
+certifi==2026.2.25
 
 # --- Routine minor/patch ---
 # urllib3 1.26.x → latest 1.26.x patch, or potential 2.x major bump
