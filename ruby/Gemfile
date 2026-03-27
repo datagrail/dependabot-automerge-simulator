@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # --- Security fix (minor/patch bump) ---
 # rack 2.2.3 has multiple CVEs (e.g. GHSA-rqv2-275x-2jq5, GHSA-65f5-mfpf-vfhj)
 # Dependabot security update will bump to 2.2.6.3+ (same major, patch/minor bump)
-gem 'rack', '2.2.3'
+gem 'rack', '3.2.5'
 
 # --- Major version bump (routine) ---
 # rake 12.x → 13.x: Dependabot version update will suggest rake 13.x
