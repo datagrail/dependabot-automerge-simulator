@@ -30,3 +30,5 @@ rules:
     disable: true
   artipacked:
     disable: true
+  template-injection:
+    disable: true
