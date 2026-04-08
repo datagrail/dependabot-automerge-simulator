@@ -3,7 +3,7 @@ GEM
   specs:
     json (2.7.0)
     minitest (5.18.0)
-    rack (2.2.3)
+    rack (3.2.5)
     rake (12.3.3)
 
 PLATFORMS
@@ -13,7 +13,7 @@ PLATFORMS
 DEPENDENCIES
   json (= 2.7.0)
   minitest (= 5.18.0)
-  rack (= 2.2.3)
+  rack (= 3.2.5)
   rake (= 12.3.3)
 
 BUNDLED WITH
