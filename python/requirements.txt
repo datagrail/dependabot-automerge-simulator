@@ -6,7 +6,7 @@ requests==2.33.0
 # --- Major version bump (routine) ---
 # Flask 2.x → 3.x: Dependabot version update will suggest Flask 3.x
 # The automerge tool detects the major bump and labels for human review
-Flask==2.3.3
+Flask==3.1.3
 
 # --- Routine minor/patch ---
 # Dependabot will suggest newer 2023/2024 releases of certifi
